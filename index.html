@@ -521,8 +521,7 @@
       <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 mb-4">Vraag een gratis concept aan</h2>
       <p class="text-gray-500 text-base sm:text-lg">Vertel ons over jouw bedrijf. We maken vrijblijvend een eerste ontwerp.</p>
     </div>
-    <form id="contact-form" name="contact" netlify class="reveal bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 space-y-5" onsubmit="handleForm(event)">
-      <input type="hidden" name="form-name" value="contact" />
+    <form id="contact-form" action="https://formspree.io/f/mjgadoor" method="POST" class="reveal bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 space-y-5" onsubmit="handleForm(event)">
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1.5">Naam</label>
@@ -585,7 +584,7 @@
         <a href="#portfolio" class="hover:text-white transition-colors">Portfolio</a>
         <a href="#contact"   class="hover:text-white transition-colors">Contact</a>
       </div>
-      <a href="mailto:info@zaakmakers.nl" class="text-sm hover:text-white transition-colors">info@zaakmakers.nl</a>
+      <a href="/cdn-cgi/l/email-protection#71181f171e310b10101a1c101a1403025f1f1d" class="text-sm hover:text-white transition-colors"><span class="__cf_email__" data-cfemail="771e191118370d16161c1a161c12050459191b">[email&#160;protected]</span></a>
     </div>
     <div class="mt-8 pt-8 border-t border-white/10 text-center text-xs text-gray-600">
       &copy; 2026 Zaakmakers. Alle rechten voorbehouden. KVK: 12345678
@@ -593,7 +592,7 @@
   </div>
 </footer>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // MOBILE MENU
 document.getElementById('menu-btn').addEventListener('click', () => document.getElementById('mobile-menu').classList.toggle('hidden'))
 document.getElementById('mobile-menu').querySelectorAll('a').forEach(a => a.addEventListener('click', () => document.getElementById('mobile-menu').classList.add('hidden')))
@@ -703,19 +702,27 @@ function handleForm(e){
   const btn = form.querySelector('button[type=submit]')
   btn.textContent = 'Verzenden...'
   btn.disabled = true
-  fetch('/', {
+  fetch('https://formspree.io/f/mjgadoor', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams(new FormData(form)).toString()
+    headers: { 'Accept': 'application/json' },
+    body: new FormData(form)
   })
-  .then(() => {
-    form.style.display = 'none'
-    document.getElementById('form-success').classList.remove('hidden')
+  .then(response => {
+    if (response.ok) {
+      form.style.display = 'none'
+      document.getElementById('form-success').classList.remove('hidden')
+    } else {
+      return response.json().then(data => {
+        btn.textContent = 'Gratis concept aanvragen'
+        btn.disabled = false
+        alert('Er ging iets mis. Probeer het opnieuw of neem contact op via WhatsApp.')
+      })
+    }
   })
   .catch(() => {
     btn.textContent = 'Gratis concept aanvragen'
     btn.disabled = false
-    alert('Er ging iets mis. Probeer het opnieuw of stuur een WhatsApp.')
+    alert('Er ging iets mis. Probeer het opnieuw of neem contact op via WhatsApp.')
   })
 }
 </script>
